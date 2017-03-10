@@ -1,5 +1,7 @@
 # External run Let’s encrypt/acme role for Ansible
 
+[![Build Status](https://travis-ci.org/morbidick/ansible-role-letsencrypt.svg?branch=master)](https://travis-ci.org/morbidick/ansible-role-letsencrypt)
+
 This role should be run periodically (for example with [ansible tower](https://www.ansible.com/tower) or [rundeck](http://rundeck.org/)) to renew certificates. For now only the http-01 challenge is supported (maybe you wanna write a PR? ;) ).
 
 It automates the following tasks:
@@ -118,6 +120,7 @@ MIT
 ## Author Information
 
 Forked and ported to Ansibles Let's encrypt module by [morbidick](https://github.com/morbidick/).
+
 The original acme-tiny role was created by Andreas Wolf. Visit his [website](http://a-w.io) and [Github profile](https://github.com/andreaswolf/) or follow him on [Twitter](https://twitter.com/andreaswo).
 
 ### Contributors

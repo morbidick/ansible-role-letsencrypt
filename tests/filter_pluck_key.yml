@@ -1,0 +1,31 @@
+---
+- name: test the pluck filter
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    test_list:
+      topkey1:
+        testkey: "teststring1"
+      topkey2:
+        testkey: "teststring2"
+      topkey3:
+        testkey: "teststring3"
+      topkey4:
+        notestkey: "lel"
+    test_list_expected_return:
+      topkey1: "teststring1"
+      topkey2: "teststring2"
+      topkey3: "teststring3"
+
+  tasks:
+    - debug:
+        msg: "{{ test_list_expected_return }}"
+
+    - set_fact:
+        test_list_return: "{{ test_list | pluck_key('testkey') }}"
+
+    - name: return all values corresponding to the plucked key
+      debug: msg="{{ test_list_return | sort }}"
+      failed_when: "{{ test_list_return != test_list_expected_return }}"

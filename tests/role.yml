@@ -1,0 +1,8 @@
+---
+- hosts: all
+
+  roles:
+    - role_under_test
+
+  vars:
+    letsencrypt_acme_directory: "{{ letsencrypt_acme_directory_staging }}"

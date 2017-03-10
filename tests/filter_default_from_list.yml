@@ -1,0 +1,37 @@
+---
+- name: test the default_from_list filter
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  vars:
+    test_list:
+      - "teststring1"
+      - "teststring2"
+      - "teststring3"
+    test_list_expected_return: "teststring1"
+
+    test_string: "teststring4"
+    test_string_expected_return: "teststring4"
+
+  tasks:
+    - set_fact:
+        defined_input: "{{ 'defined' | default_from_list(test_list) }}"
+
+    - name: the given input should be returned
+      debug: var=defined_input
+      failed_when: "{{ defined_input != 'defined' }}"
+
+    - set_fact:
+        test_list_return: "{{ undefined_string | default_from_list(test_list) }}"
+
+    - name: the first element of a given list should be returned
+      debug: var=test_list_return
+      failed_when: "{{ test_list_return != test_list_expected_return }}"
+
+    - set_fact:
+        test_string_return: "{{ undefined_string | default_from_list(test_string) }}"
+
+    - name: the string itself should be returned
+      debug: var=test_string_return
+      failed_when: "{{ test_string_return != test_string_expected_return }}"
