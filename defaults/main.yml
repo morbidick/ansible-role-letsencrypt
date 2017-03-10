@@ -1,12 +1,4 @@
 ---
-
-acme_tiny_repo: 'https://github.com/diafygi/acme-tiny.git'
-acme_tiny_commit: '7a5a2558c8d6e5ab2a59b9fec9633d9e63127971'
-
-acme_tiny_software_directory: '/usr/local/letsencrypt'
-acme_tiny_data_directory: '/var/lib/letsencrypt'
-acme_tiny_challenges_directory: '/var/www/letsencrypt'
-
 # Path to the local file containing the account key to copy to the server.
 # Secure this file using Git-crypt for example.
 # Leave this blank to generate a new account key that will need to be registered manually with Letsencrypt.org
@@ -15,44 +7,56 @@ acme_tiny_challenges_directory: '/var/www/letsencrypt'
 # Content of the account key to copy to the server.
 # Secure this key using Ansible Vault for example.
 # Leave this blank to generate a new account key that will need to be registered manually with Letsencrypt.org
-#letsencrypt_account_key_source_content: |
+# letsencrypt_account_key_source_content: |
 #  -----BEGIN RSA PRIVATE KEY-----
 #  MIIJKAJBBBKCaGEA63J7t9dqyua5+Q+P6M3iHtLEKpF/AZcZNBHr1F2Oo8+Hfyvl
 #  KWXliiWjUORxDxI1c56Rw2VCIExnFjWJAdSLv6/XaQWo2T7U28bkKbAlCF9=
 #  -----END RSA PRIVATE KEY-----
 
-letsencrypt_account_key: '{{ acme_tiny_data_directory }}/account.key'
+letsencrypt_certs: []
+letsencrypt_reload_services: []
+letsencrypt_default_challenge_type: "http-01"
+letsencrypt_acme_directory: "https://acme-v01.api.letsencrypt.org/directory"
+letsencrypt_acme_directory_staging: "https://acme-staging.api.letsencrypt.org/directory"
 
 letsencrypt_intermediate_cert_path: '/etc/ssl/certs/lets-encrypt-x3-cross-signed.pem'
 letsencrypt_intermediate_cert_url: 'https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem'
 letsencrypt_intermediate_cert_sha256sum: 'e446c5e9dbef9d09ac9f7027c034602492437a05ff6c40011d7235fca639c79a'
 
-letsencrypt_key_dir: '/etc/ssl/letsencrypt/keys'
-letsencrypt_certs_dir: '/etc/ssl/letsencrypt/certs'
+letsencrypt_keys_dir: '/etc/ssl/letsencrypt/keys'
+letsencrypt_keys_path: '{{ letsencrypt_keys_dir }}/{{ letsencrypt_cert_name }}.key'
+letsencrypt_keys_dir_permissions: '0700'
+letsencrypt_keys_dir_owner: root
+letsencrypt_keys_dir_group: root
 
-letsencrypt_key_dir_permissions: '0700'
-letsencrypt_key_dir_owner: root
-letsencrypt_key_dir_group: root
+letsencrypt_account_key: '/etc/ssl/letsencrypt/keys/letsencrypt_account.key'
+letsencrypt_account_key_remove: no
 
-letsencrypt_certs: []
-
-letsencrypt_certs_dir_permissions: '0755'
-letsencrypt_certs_dir_owner: '{{ letsencrypt_user }}'
-letsencrypt_certs_dir_group: '{{ letsencrypt_group }}'
-
-letsencrypt_user: 'letsencrypt'
-letsencrypt_group: 'letsencrypt'
-
+letsencrypt_key_size: 4096
+letsencrypt_default_key_permissions: '0600'
 letsencrypt_default_key_owner: 'root'
 letsencrypt_default_key_group: 'root'
-letsencrypt_default_key_permissions: '0600'
 
-# the minimum age (in days) after which a certificate will be renewed
-letsencrypt_min_renewal_age: 60
+letsencrypt_cert_name: "{{ item.name | default_from_list(item.host) }}"
+letsencrypt_certs_dir: '/etc/ssl/letsencrypt/certs'
+letsencrypt_certs_path: '{{ letsencrypt_certs_dir }}/{{ letsencrypt_cert_name }}.crt'
+letsencrypt_certs_path_date: '{{ letsencrypt_certs_dir }}/{{ letsencrypt_cert_name }}_{{ working_date }}.crt'
 
-# the days of a month the cronjob should be run. Make sure to run it rather often, three times per month is a pretty
-# good value. It does not harm to run it often, as it will only regenerate certificates that have passed a certain age
-# (60 days by default).
-letsencrypt_cronjob_daysofmonth: 1,11,21
+letsencrypt_certs_dir_permissions: '0750'
+letsencrypt_certs_dir_owner: 'root'
+letsencrypt_certs_dir_group: 'root'
 
-...
+letsencrypt_default_cert_permissions: '0640'
+letsencrypt_default_cert_owner: 'root'
+letsencrypt_default_cert_group: 'root'
+
+letsencrypt_challenges_dir: '/var/www/letsencrypt'
+letsencrypt_challenges_dir_permissions: '0755'
+letsencrypt_challenges_dir_owner: 'root'
+letsencrypt_challenges_dir_group: 'root'
+
+letsencrypt_csrs_dir: '/etc/ssl/letsencrypt/csrs'
+letsencrypt_csrs_path: '{{ letsencrypt_csrs_dir }}/{{ letsencrypt_cert_name }}.csr'
+
+# the minimum days left before a certificate will be renewed
+letsencrypt_remaining_days: 30

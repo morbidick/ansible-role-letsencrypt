@@ -1,0 +1,6 @@
+---
+- name: reload services
+  service:
+    name: "{{ item }}"
+    state: reloaded
+  with_items: "{{ letsencrypt_reload_services }}"

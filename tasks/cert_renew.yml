@@ -1,0 +1,81 @@
+---
+- name: "{{ letsencrypt_cert_name }} : request cert/challenge"
+  letsencrypt:
+    account_key: "{{ letsencrypt_account_key }}"
+    csr: "{{ letsencrypt_csrs_path }}"
+    dest: "{{ letsencrypt_certs_path_date }}"
+    remaining_days: "{{ letsencrypt_remaining_days }}"
+    challenge: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) }}"
+    acme_directory: "{{ letsencrypt_acme_directory }}"
+    account_email: "{{ letsencrypt_account_mail | default(omit) }}"
+  register: item_challenge
+  notify: reload services
+
+# http-01 challenge
+- name: "{{ letsencrypt_cert_name }} : generate http-01 challenge(s)"
+  copy:
+    dest: "{{ letsencrypt_challenges_dir }}/{{ challenge.value['resource'] | basename }}"
+    content: "{{ challenge.value['resource_value'] }}"
+  with_dict:
+    "{{ item_challenge['challenge_data'] | pluck_key('http-01') }}"
+  loop_control:
+    loop_var: "challenge"
+    label: "{{ challenge.value['resource'] }}"
+  when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'http-01' and item_challenge|changed }}"
+
+# dns-01 challenge
+- name: "{{ letsencrypt_cert_name }} : dns-01 challenge data"
+  debug:
+    msg: "{{ item_challenge['challenge_data'] | pluck_key('dns-01') }}"
+  when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'dns-01' and item_challenge|changed }}"
+
+- name: "{{ letsencrypt_cert_name }} : dns-01 challenge wait"
+  pause:
+    prompt: "dns-01 currently unsupported, pls perform the necessary actions yourself, press enter to continue"
+  when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'dns-01' and item_challenge|changed }}"
+
+# tls-sni-02 challenge (not yet implemented by LE)
+# - name: "{{ letsencrypt_cert_name }} : tls-sni-02 challenge data"
+#   debug:
+#     msg: "{{ item_challenge['challenge_data'] | pluck_key('tls-sni-02') }}"
+#   when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'tls-sni-02' and item_challenge|changed }}"
+#
+# - name: "{{ letsencrypt_cert_name }} : tls-sni-02 challenge wait"
+#   pause:
+#     prompt: "tls-sni-02 currently unsupported, pls perform the necessary actions yourself, press enter to continue"
+#   when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'tls-sni-02' and item_challenge|changed }}"
+
+- name: "{{ letsencrypt_cert_name }} : request cert 2nd time"
+  letsencrypt:
+    account_key: "{{ letsencrypt_account_key }}"
+    csr: "{{ letsencrypt_csrs_path }}"
+    dest: "{{ letsencrypt_certs_path_date }}"
+    remaining_days: "{{ letsencrypt_remaining_days }}"
+    data: "{{ item_challenge }}"
+    challenge: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) }}"
+    acme_directory: "{{ letsencrypt_acme_directory }}"
+    account_email: "{{ letsencrypt_account_mail | default(omit) }}"
+  register: item_challenge2
+
+- name: "{{ letsencrypt_cert_name }} : renewal check"
+  letsencrypt:
+    account_key: "{{ letsencrypt_account_key }}"
+    csr: "{{ letsencrypt_csrs_path }}"
+    dest: "{{ letsencrypt_certs_path_date }}"
+    remaining_days: "{{ letsencrypt_remaining_days }}"
+  check_mode: yes
+  register: cert_check2
+  failed_when: "{{ cert_check2['cert_days'] < letsencrypt_remaining_days }}"
+
+- name: "{{ letsencrypt_cert_name }} : set permissions"
+  file:
+    path: "{{ letsencrypt_certs_path_date }}"
+    owner: "{{ item.cert_owner | default(letsencrypt_default_cert_owner) }}"
+    group: "{{ item.cert_group | default(letsencrypt_default_cert_group) }}"
+    mode: "{{ item.cert_permissions | default(letsencrypt_default_cert_permissions) }}"
+
+- name: "{{ letsencrypt_cert_name }} : create symlink"
+  file:
+    path: "{{ letsencrypt_certs_path }}"
+    src: "{{ letsencrypt_certs_path_date }}"
+    state: link

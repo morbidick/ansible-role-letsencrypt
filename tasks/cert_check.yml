@@ -1,0 +1,13 @@
+---
+- name: "{{ letsencrypt_cert_name }} : compute remaining days"
+  letsencrypt:
+    account_key: "{{ letsencrypt_account_key }}"
+    csr: "{{ letsencrypt_csrs_path }}"
+    dest: "{{ letsencrypt_certs_path }}"
+    remaining_days: "{{ letsencrypt_remaining_days }}"
+  check_mode: yes
+  register: cert_check
+
+- name: "{{ letsencrypt_cert_name }} : renew : valid for {{ cert_check['cert_days'] }} days"
+  include: cert_renew.yml
+  when: "{{ cert_check | changed }}"

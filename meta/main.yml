@@ -1,10 +1,10 @@
 ---
 galaxy_info:
-  author: Andreas Wolf
-  description: Installs and configures acme-tiny, a lightweight Let’s encrypt client.
-  issue_tracker_url: https://github.com/andreaswolf/ansible-role-letsencrypt/issues
+  author: morbidick
+  description: Manages Let's Encrypt certs via the build in ansible module.
+  issue_tracker_url: https://github.com/morbidick/ansible-role-letsencrypt/issues
   license: MIT
-  min_ansible_version: 1.3
+  min_ansible_version: 2.2
 
   platforms:
   - name: Debian
