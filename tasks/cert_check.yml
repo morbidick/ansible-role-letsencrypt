@@ -11,3 +11,4 @@
 - name: "{{ letsencrypt_cert_name }} : renew : valid for {{ cert_check['cert_days'] }} days"
   include: cert_renew.yml
   when: "{{ cert_check | changed }}"
+  notify: reload letsencrypt dependent services

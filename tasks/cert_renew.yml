@@ -9,7 +9,6 @@
     acme_directory: "{{ letsencrypt_acme_directory }}"
     account_email: "{{ letsencrypt_account_mail | default(omit) }}"
   register: item_challenge
-  notify: reload services
 
 # http-01 challenge
 - name: "{{ letsencrypt_cert_name }} : generate http-01 challenge(s)"
