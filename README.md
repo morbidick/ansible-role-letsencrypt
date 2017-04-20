@@ -37,13 +37,14 @@ downloaded.
 
 Add the certificates to generate to their respective hosts (important! if the certificate is not generated on the host the DNS A record points to, Let’s encrypt won’t be able to verify if the hostname really belongs to you and thus won’t give you the certificate!):
 
-````
+````yaml
 letsencrypt_certs:
 - host: "myhost.example.com"
 - host:
   - "foo.example.org"
   - "bar.example.org"
 - name: webservers
+  host:
   - "www1.example.org"
   - "www2.example.org"
 ````
@@ -52,7 +53,7 @@ The certificate will be placed at `{{ letsencrypt_certs_dir }}/{{ name }}.crt`, 
 The key is placed at `{{ letsencrypt_keys_dir }}/{{ name }}.key`.
 Other optoinal options are:
 - `name`: defaults to the first given host
-- `challenge_type`:: which challenge type should be used, defaults `letsencrypt_default_challenge_type` - http-01
+- `challenge_type`: which challenge type should be used, defaults to `letsencrypt_default_challenge_type` - http-01
 
 For multidomain certificates, all mentioned names must point to the server where the certificate is being generated.
 
@@ -99,7 +100,7 @@ No direct dependencies, but of course you will need to have a webserver configur
 
 You can use the Vagrantfile for local testing, just install vagrant and virtualbox and execute the following commands:
 
-````
+````bash
 vagrant up
 vagrant provision
 ````
