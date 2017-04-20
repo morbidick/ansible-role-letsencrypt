@@ -3,4 +3,5 @@
   service:
     name: "{{ item }}"
     state: reloaded
+    daemon_reload: yes
   with_items: "{{ letsencrypt_reload_services }}"
