@@ -20,7 +20,7 @@
   loop_control:
     loop_var: "challenge"
     label: "{{ challenge.value['resource'] }}"
-  when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'http-01' and item_challenge|changed }}"
+  when: item.challenge_type | default(letsencrypt_default_challenge_type) == 'http-01' and item_challenge|changed
 
 # dns-01 challenge
 - name: "{{ letsencrypt_cert_name }} : dns-01 challenge data"
@@ -31,18 +31,18 @@
 - name: "{{ letsencrypt_cert_name }} : dns-01 challenge wait"
   pause:
     prompt: "dns-01 currently unsupported, pls perform the necessary actions yourself, press enter to continue"
-  when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'dns-01' and item_challenge|changed }}"
+  when: item.challenge_type | default(letsencrypt_default_challenge_type) == 'dns-01' and item_challenge|changed
 
 # tls-sni-02 challenge (not yet implemented by LE)
 # - name: "{{ letsencrypt_cert_name }} : tls-sni-02 challenge data"
 #   debug:
 #     msg: "{{ item_challenge['challenge_data'] | pluck_key('tls-sni-02') }}"
-#   when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'tls-sni-02' and item_challenge|changed }}"
+#   when: item.challenge_type | default(letsencrypt_default_challenge_type) == 'tls-sni-02' and item_challenge|changed
 #
 # - name: "{{ letsencrypt_cert_name }} : tls-sni-02 challenge wait"
 #   pause:
 #     prompt: "tls-sni-02 currently unsupported, pls perform the necessary actions yourself, press enter to continue"
-#   when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'tls-sni-02' and item_challenge|changed }}"
+#   when: item.challenge_type | default(letsencrypt_default_challenge_type) == 'tls-sni-02' and item_challenge|changed
 
 - name: "{{ letsencrypt_cert_name }} : request cert 2nd time"
   letsencrypt:
@@ -64,7 +64,7 @@
     remaining_days: "{{ letsencrypt_remaining_days }}"
   check_mode: yes
   register: cert_check2
-  failed_when: "{{ cert_check2['cert_days'] < letsencrypt_remaining_days }}"
+  failed_when: cert_check2['cert_days'] < letsencrypt_remaining_days
 
 - name: "{{ letsencrypt_cert_name }} : set permissions"
   file:
