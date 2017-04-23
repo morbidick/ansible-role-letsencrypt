@@ -6,7 +6,7 @@
 
 - name: "check for defined host variable"
   fail: msg="Key host is not defined"
-  when: "{{ item.host is not defined }}"
+  when: item.host is not defined
   with_items: "{{ letsencrypt_certs }}"
 
 - name: create csr directory

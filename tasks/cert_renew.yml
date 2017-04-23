@@ -26,7 +26,7 @@
 - name: "{{ letsencrypt_cert_name }} : dns-01 challenge data"
   debug:
     msg: "{{ item_challenge['challenge_data'] | pluck_key('dns-01') }}"
-  when: "{{ item.challenge_type | default(letsencrypt_default_challenge_type) == 'dns-01' and item_challenge|changed }}"
+  when: item.challenge_type | default(letsencrypt_default_challenge_type) == 'dns-01' and item_challenge|changed
 
 - name: "{{ letsencrypt_cert_name }} : dns-01 challenge wait"
   pause:
