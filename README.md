@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/morbidick/ansible-role-letsencrypt.svg?branch=master)](https://travis-ci.org/morbidick/ansible-role-letsencrypt)
 
-This role should be run periodically (for example with [ansible tower](https://www.ansible.com/tower) or [rundeck](http://rundeck.org/)) to renew certificates. For now only the http-01 challenge is supported (maybe you wanna write a PR? ;) ).
+:fire: This role uses the buildin letsencrypt module so it needs to be run periodically. It has been deprecated in favour of [this certbot based role](https://github.com/morbidick/ansible-role-certbot). :fire:
 
 It automates the following tasks:
 
